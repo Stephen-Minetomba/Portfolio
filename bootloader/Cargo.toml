@@ -1,0 +1,11 @@
+[package]
+name = "uefi_bootloader"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+uefi = "0.23.0"
+uefi-services = "0.20.0"
+
+[profile.release]
+panic = "abort"
