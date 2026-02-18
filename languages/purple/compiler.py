@@ -1,16 +1,10 @@
 program = """
-// set register 1 to 10
 SET R1 I10
-// while r1 > 0, do:
-JMP :while I0==I0
+JMP :endwhile I0==I0
 :while
-// subtract 1 from r1
 ADD R1 I-1
-// break the loop if R1 is zero
 :endwhile
 JMP :while R1!=I0
-// success register
-SET R2 I5
 """
 
 labels = {}
