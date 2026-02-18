@@ -83,3 +83,6 @@ while memory[0] < len(program):
     do_instruction(program[memory[0]])
     memory[0] += 1
 print(memory)
+
+# The only rule:
+# 1. Never use register 0 unless you're doing jumping or some special programmer vodoo.
