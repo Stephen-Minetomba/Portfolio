@@ -72,8 +72,14 @@ def do_instruction(instruction: str):
                     memory[r1] = ri2
             break
 
-do_instruction("purple 0 i5 i0==i0 0")
-do_instruction("purple 1 i-8 i0==i0 0")
-do_instruction("purple 0 r1 i0==i0 1")
-do_instruction("purple 1 i0 i0==i0 0")
+program = [i for i in """
+purple 0 i5 i0==i0 0
+purple 1 i-8 i0==i0 0
+purple 0 r1 i0==i0 0
+purple 1 i0 i0==i0 0
+""".splitlines() if i]
+
+while memory[0] < len(program):
+    do_instruction(program[memory[0]])
+    memory[0] += 1
 print(memory)
