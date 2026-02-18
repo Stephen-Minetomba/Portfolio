@@ -73,12 +73,10 @@ def do_instruction(instruction: str):
             break
 
 program = [i for i in """
-purple i2 i4 i0==i0 0
-purple i1 i1 i0==i0 1
-purple i3 r1 i0==i0 0
-purple i3 i4 i0==i0 1
-purple r3 r1 i0==i0 0
-purple i0 i0 r1!=r2 0
+purple i1 i10 i0==i0 0
+purple i1 i-1 i0==i0 1
+purple i0 i0 r1!=i0 0
+purple i2 i5 i0==i0 0
 """.splitlines() if i]
 
 while memory[0] < len(program):
@@ -88,3 +86,6 @@ print(memory)
 
 # The only rule:
 # 1. Never use register 0 unless you're doing jumping or some special programmer vodoo.
+
+# Debugging:
+# 1. If you want to overwrite register 0 with integer 1, then do "purple i0 i1 i0==i0 0", not "purple r0 i1 i0==i0 0". Remember that in the compiler, you can just say 'set r0 i1', and use pointers with 'set p0 i1'
