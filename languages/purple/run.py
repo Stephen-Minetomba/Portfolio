@@ -27,11 +27,6 @@ def do_instruction(instruction: str):
         print("PANIC: Invalid instruction length")
         return
 
-    r1 = int(parts[1])
-    ri2 = parts[2]
-    c3 = parts[3]
-    b4 = int(parts[4])
-
     # Helper to resolve R/I values
     def resolve(value):
         value = value.strip()
@@ -42,6 +37,11 @@ def do_instruction(instruction: str):
         else:
             print("PANIC: Invalid R/I value")
             exit(0)
+
+    r1 = resolve(parts[1])
+    ri2 = parts[2]
+    c3 = parts[3]
+    b4 = int(parts[4])
 
     # Resolve ri2
     ri2 = resolve(ri2)
@@ -73,9 +73,12 @@ def do_instruction(instruction: str):
             break
 
 program = [i for i in """
-purple 2 i4 i0==i0 0
-purple 1 i1 i0==i0 1
-purple 0 i0 r1!=r2 0
+purple i2 i4 i0==i0 0
+purple i1 i1 i0==i0 1
+purple i3 r1 i0==i0 0
+purple i3 i4 i0==i0 1
+purple r3 r1 i0==i0 0
+purple i0 i0 r1!=r2 0
 """.splitlines() if i]
 
 while memory[0] < len(program):
