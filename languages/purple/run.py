@@ -73,10 +73,9 @@ def do_instruction(instruction: str):
             break
 
 program = [i for i in """
-purple 1 i5 i0==i0 0
-purple 2 i-8 i0==i0 0
-purple 1 r2 i0==i0 1
-purple 2 i0 i0==i0 0
+purple 2 i4 i0==i0 0
+purple 1 i1 i0==i0 1
+purple 0 i0 r1!=r2 0
 """.splitlines() if i]
 
 while memory[0] < len(program):

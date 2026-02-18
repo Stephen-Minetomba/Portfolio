@@ -1,0 +1,18 @@
+# Initialize
+SET 1 0       # memory[1] = 0 - no command needed | counter
+SET 2 4       # memory[2] = 4  - purple 2 i4 i0==i0 0 | limit
+
+# Start of loop
+LOOP: - since there are no labels, we will use the line ID
+  ADD 1 1       # Increment counter by 1
+  JMP LOOP R1!=R2      # Jump back to LOOP if counter != limit - purple 0 iLOOP R1!=R2
+
+----------
+purple 2 i4 i0==i0 0
+purple 1 i1 i0==i0 1
+purple 0 i0 r1!=r1 0
+// Don't forget that when you jump, the address is always:
+// 0 (if you want to jump & run address 1, then put address 0)
+// 1
+// 2
+----------
