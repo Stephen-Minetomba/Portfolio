@@ -69,9 +69,11 @@ fn kernel(system_table: &mut SystemTable<Boot>) -> Status {
         wait!(system_table, 1_000_000);
     }
     // ==================== EXECUTION OF CODE ====================
-	// To-Do: (I'm sorry that my code looks like garbage. I'll add more comments in later projects)
+    // To-Do: (I'm sorry that my code looks like garbage. I'll add more comments in later projects)
     // 1. The list must be reversed
     // 2. Do peek_front and pop_front repeateadly until the list is 0 (which you can do with a 'while' loop where you use the 'not_zero' function of the memory as the condition). Then, you can execute it. But in subleq you have to take 3, so just make another list repeateadly and use it to store the 3 values and run the program.
+    // 3. Make a proper typing system
+
     let _ = output!(system_table, "shutting down...");
     wait!(system_table, 1_000_000);
     Status::SUCCESS
