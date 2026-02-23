@@ -74,7 +74,7 @@ def do_instruction(instruction: str):
 
 program = """
 
-purple i1 i5 i0==i0 0
+purple i1 i8 i0==i0 0
 purple i1 i-1 i0==i0 1
 purple i2 r1 i0==i0 0
 purple i2 i1 i0==i0 1
