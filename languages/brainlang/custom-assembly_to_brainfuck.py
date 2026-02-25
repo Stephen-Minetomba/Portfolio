@@ -46,44 +46,10 @@ All possible instructions:
 
 # Code for calculating the factorial of 5.
 code = """
-rpt 5 inc cell 1
-
-cpy cell 1 into cell 2
-cpy cell 1 into cell 3
-cpy cell 1 into cell 4
-cpy cell 1 into cell 5
-
-dec cell 2
-rpt 2 dec cell 3
-rpt 3 dec cell 4
-rpt 4 dec cell 5
-
-whl cell 1
-dec cell 1
-cpy cell 2 into cell 7
-mov cell 2 into cell 6
-mov cell 7 into cell 2
-endwhl cell 1
-nul cell 1
-mov cell 6 into cell 1
-
-whl cell 1
-dec cell 1
-cpy cell 3 into cell 7
-mov cell 3 into cell 6
-mov cell 7 into cell 3
-endwhl cell 1
-nul cell 1
-mov cell 6 into cell 1
-
-whl cell 1
-dec cell 1
-cpy cell 4 into cell 7
-mov cell 4 into cell 6
-mov cell 7 into cell 4
-endwhl cell 1
-nul cell 1
-mov cell 6 into cell 1
+rpt 83 inc cell 1
+say 1
+rpt 116 inc cell 2
+say 2
 """.splitlines()
 
 code_temp = []
@@ -159,7 +125,7 @@ string = string.strip()
 while "<>" in string:
     string = string.replace("<>", "")
 
-bitfuck = True
+bitfuck = False
 if bitfuck:
     string = string.replace("+", "T")
     string = string.replace("-", "T")
