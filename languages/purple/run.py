@@ -74,12 +74,16 @@ def do_instruction(instruction: str):
 
 program = """
 
-purple i1 i8 i0==i0 0
-purple i1 i-1 i0==i0 1
-purple i2 r1 i0==i0 0
+purple i1 i7 i0==i0 0
+purple i2 i1 i0==i0 0
+purple i3 i1 i0==i0 0
+purple i5 r3 i0==i0 0
+purple i4 i0 i0==i0 0
+purple i3 r5 i0==i0 1
+purple i4 i1 i0==i0 1
+purple i0 i4 r4!=r2 0
 purple i2 i1 i0==i0 1
-purple r2 r1 i0==i0 0
-purple i0 i0 r1!=i0 0
+purple i0 i2 r2!=r1 0
 
 """.splitlines()
 program = [i for i in program if i]
