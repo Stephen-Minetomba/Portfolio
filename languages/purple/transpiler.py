@@ -27,8 +27,8 @@ def jmp(x: int, condition: str): # Register containing value, Condition
     pseudocode.append(f"// JMP r{x} {condition}")
     return f"purple i0 r{x} {condition} 0"
 def jmpi(x: int, condition: str): # Integer, Condition
-    pseudocode.append("} // JMPI " + f"{x} {condition}")
-    pseudocode.insert(x + 1, f"while {condition}" + " {")
+    pseudocode.append("} loop if " + condition + " // JMPI " + f"{x} {condition}")
+    pseudocode.insert(x + 1, "do {")
     index = x + 2
     while index < len(pseudocode) - 1:
         pseudocode[index] = "\t" + pseudocode[index]
