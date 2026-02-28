@@ -23,7 +23,7 @@ def do_instruction(instruction: str):
         return
     
     parts = instruction.split(" ")
-    if len(parts) != 5:
+    if len(parts) != 6:
         print("PANIC: Invalid instruction length")
         return
 
@@ -45,6 +45,18 @@ def do_instruction(instruction: str):
 
     # Resolve ri2
     ri2 = resolve(ri2)
+    
+    # Apply the inversion parameter
+    if int(parts[5]) == 1:
+        if ri2 > 0:
+            ri2 = -ri2
+        elif ri2 < 0:
+            ri2 = 0 - ri2
+        # We don't/can't invert it if it is 0
+    elif int(parts[5]) != 0:
+        print("[ERROR] Invalid inversion parameter value (must be 0 or 1)")
+        exit(1)
+    # If it's zero, then we don't do anything
 
     # Resolve condition
     cond_ops = [">=", "<=", "==", "!=", ">", "<"]
@@ -74,16 +86,8 @@ def do_instruction(instruction: str):
 
 program = """
 
-purple i1 i7 i0==i0 0
-purple i2 i1 i0==i0 0
-purple i3 i1 i0==i0 0
-purple i5 r3 i0==i0 0
-purple i4 i0 i0==i0 0
-purple i3 r5 i0==i0 1
-purple i4 i1 i0==i0 1
-purple i0 i4 r4!=r2 0
-purple i2 i1 i0==i0 1
-purple i0 i2 r2!=r1 0
+purple i1 i7 i0==i0 0 0
+purple i1 i3 i0==i0 1 1
 
 """.splitlines()
 program = [i for i in program if i]
