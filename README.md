@@ -8,15 +8,10 @@ This repository will contain most of my coding projects, free and open source (s
 ### helpers/library.go
 This is a **library** I made in **Go** to assist people in moving from Python to Go.
 ### bootloader
-To use it, first, let's install nightly.
-```bash
-rustup install nightly
-rustup default nightly
-rustup component add rust-src llvm-tools-preview
+To compile it, let's run the compilation script.
 ```
-Now that nightly is installed, we can proceed with building it.
-```bash
-cargo build --release --target x86_64-unknown-uefi
+chmod +x compile.sh # if not already executable
+./compile.sh # will install nightly, other dependencies, and compile it
 ```
 The EFI file should now be in **target/x86_64-unknown-uefi/release/uefi_bootloader.efi**.
 Now, use QEMU to run the EFI file. Also, if you want to modify it, I built a lot of useful macros that you can use to modify the functionality.

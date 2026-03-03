@@ -64,7 +64,27 @@ fn kernel(system_table: &mut SystemTable<Boot>) -> Status {
 
     while *memory.peek_back().expect("REASON") < memory.len() as i64 {
         let last_val = *memory.peek_back().expect("REASON");
-        output!(system_table, get(&program, last_val as usize).expect("REASON"));
+        let instruction = get(&program, last_val as usize).expect("REASON");
+        
+        // Python equivalent: instruction_memory = instruction.split(" ")
+        let mut instruction_memory: LinkedList<&str> = LinkedList::new();
+        let mut start = 0;
+        let bytes = instruction.as_bytes();
+        for i in 0..bytes.len() {
+            if bytes[i] == b' ' {
+                if start != i {
+                    let part = &instruction[start..i];
+                    instruction_memory.push_front(part);
+                }
+                start = i + 1;
+            }
+        }
+        if start < instruction.len() {
+            instruction_memory.push_front(&instruction[start..]);
+        }
+        instruction_memory.reverse();
+
+        
         memory.replace_back(last_val + 1);
     }
 
