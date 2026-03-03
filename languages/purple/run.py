@@ -16,6 +16,8 @@
 #### <=
 ## B - Boolean value (must not specify)
 
+import time
+
 memory = [0] * 100 # 100 bytes of memory
 
 def do_instruction(instruction: str):
@@ -87,13 +89,11 @@ def do_instruction(instruction: str):
 program = """
 
 purple i1 i5 i0==i0 0 0
-purple i2 i5 i0==i0 0 0
-purple i3 i0 i0==i0 0 0
-purple i4 i0 i0==i0 0 0
-purple i0 i7 r3==r1 0 0
-purple i4 r2 i0==i0 1 0
+purple i2 i3 i0==i0 0 0
+purple i0 i4 r3!=r2 0 0
+purple i4 r1 i0==i0 1 0
 purple i3 i1 i0==i0 1 0
-purple i0 i3 i0==i0 0 0
+purple i0 i2 r3!=r2 0 0
 
 """.splitlines()
 program = [i for i in program if i]

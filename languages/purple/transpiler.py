@@ -1,11 +1,9 @@
 code = """
 r1 = 5
-r2 = 5
-r3 = 0
-r4 = 0
-while not r3==r1 {
-    r4 += r2
-    r3 ++
+r2 = 3
+while r3!=r2 {
+    r4 += r1
+    r3 += 1
 }
 """
 
@@ -35,8 +33,8 @@ loop_stack = []
 i = 0
 while i < len(processed_code):
     line = processed_code[i]
-    if line.startswith("while not"):
-        cond = line[len("while not"):].strip().rstrip("{")
+    if line.startswith("while"):
+        cond = line[len("while"):].strip().rstrip("{")
         loop_start = len(assembly)
         loop_end = None
         loop_stack.append((loop_start, cond))
@@ -46,9 +44,9 @@ while i < len(processed_code):
     if line == "}":
         if loop_stack:
             loop_start, cond = loop_stack.pop()
-            loop_end = len(assembly)
+            loop_end = len(assembly) - 1
             assembly[loop_start] = f"JMPI {loop_end} {cond}"
-            assembly.append(f"JMPI {loop_start - 1} i0==i0")
+            assembly.append(f"JMPI {loop_start} {cond}")
         i += 1
         continue
     if line.endswith("++"):
@@ -126,4 +124,16 @@ for instruction in assembly:
         else:
             raise ValueError(f"Invalid argument type.\nExpected:{needed}\nReceived:{par}")
     purple.append(target)
-print("\n".join(purple))
+
+# some debugging stuff
+jump_to = []
+for line in purple:
+    if line.startswith("purple i0 "):
+        if line[10] == "i":
+            jump_to.append(line.split(" ")[2][1:])
+
+debug = False
+rust = False
+for idx, line in enumerate(purple):
+    print(f"{('> ' if str(idx) in jump_to else '  ') if debug else ''}{"    program.push_front(\"" if rust else ''}{line}{"\");" if rust else ''}")
+    if rust: print("Just paste this into the kernel (located in this git repository) and it should run... if you coded it correctly.")
