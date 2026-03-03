@@ -1,0 +1,2 @@
+None of these files were made 100% with artificial intelligence.
+The only times I used artificial intelligence were when I coded that bootloader in Rust (because I didn't have the standard library and I didn't know how to implement some things), the raycasting engine (I didn't know how to use the SDL library), the solidity analyzer (who would think a 14 year old coded 1600 lines and a solidity tokenizer by hand?), and I coded all the other files by hand.
