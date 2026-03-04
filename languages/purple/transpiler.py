@@ -1,6 +1,6 @@
 code = """
 r1 = 5
-r2 = 3
+r2 = 0
 while r3!=r2 {
     r4 += r1
     r3 += 1
@@ -13,6 +13,20 @@ while r3!=r2 {
 # 3. No ; needed at the end of a line
 # 4. Comments are made using //
 # 5. No : needed at the end of a while loop
+
+def invert_condition(cond: str):
+    if ">" in cond:
+        return cond.replace(">", "<=")
+    if "<" in cond:
+        return cond.replace("<", ">=")
+    if ">=" in cond:
+        return cond.replace(">=", "<")
+    if "<=" in cond:
+        return cond.replace("<=", ">")
+    if "==" in cond:
+        return cond.replace("==", "!=")
+    if "!=" in cond:
+        return cond.replace("!=", "==")
 
 # Turn code into lines
 code = code.splitlines()
@@ -45,7 +59,7 @@ while i < len(processed_code):
         if loop_stack:
             loop_start, cond = loop_stack.pop()
             loop_end = len(assembly) - 1
-            assembly[loop_start] = f"JMPI {loop_end} {cond}"
+            assembly[loop_start] = f"JMPI {loop_end + 1} {invert_condition(cond)}"
             assembly.append(f"JMPI {loop_start} {cond}")
         i += 1
         continue
@@ -135,5 +149,5 @@ for line in purple:
 debug = False
 rust = False
 for idx, line in enumerate(purple):
-    print(f"{('> ' if str(idx) in jump_to else '  ') if debug else ''}{"    program.push_front(\"" if rust else ''}{line}{"\");" if rust else ''}")
+    print(f"{('> ' if str(idx) in jump_to else '{ ' if str(idx - 1) in jump_to else '  ') if debug else ''}{"    program.push_front(\"" if rust else ''}{line}{"\");" if rust else ''}")
     if rust: print("Just paste this into the kernel (located in this git repository) and it should run... if you coded it correctly.")
