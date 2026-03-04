@@ -1,7 +1,7 @@
 code = """
 r1 = 5
-r2 = 0
-while r3!=r2 {
+r2 = 5
+while r3<r2 {
     r4 += r1
     r3 += 1
 }
@@ -15,10 +15,6 @@ while r3!=r2 {
 # 5. No : needed at the end of a while loop
 
 def invert_condition(cond: str):
-    if ">" in cond:
-        return cond.replace(">", "<=")
-    if "<" in cond:
-        return cond.replace("<", ">=")
     if ">=" in cond:
         return cond.replace(">=", "<")
     if "<=" in cond:
@@ -27,6 +23,10 @@ def invert_condition(cond: str):
         return cond.replace("==", "!=")
     if "!=" in cond:
         return cond.replace("!=", "==")
+    if ">" in cond:
+        return cond.replace(">", "<=")
+    if "<" in cond:
+        return cond.replace("<", ">=")
 
 # Turn code into lines
 code = code.splitlines()
@@ -136,7 +136,7 @@ for instruction in assembly:
         if needed == par:
             target = target.replace(needed, str(parameter), 1)
         else:
-            raise ValueError(f"Invalid argument type.\nExpected:{needed}\nReceived:{par}")
+            raise ValueError(f"Invalid argument type.\nExpected:{needed}\nReceived:{par}\nObject received: {parameter}")
     purple.append(target)
 
 # some debugging stuff
@@ -150,4 +150,4 @@ debug = False
 rust = False
 for idx, line in enumerate(purple):
     print(f"{('> ' if str(idx) in jump_to else '{ ' if str(idx - 1) in jump_to else '  ') if debug else ''}{"    program.push_front(\"" if rust else ''}{line}{"\");" if rust else ''}")
-    if rust: print("Just paste this into the kernel (located in this git repository) and it should run... if you coded it correctly.")
+if rust: print("Just paste this into the kernel (located in this git repository) and it should run... if you coded it correctly.")

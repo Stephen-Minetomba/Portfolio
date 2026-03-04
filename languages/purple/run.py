@@ -89,17 +89,27 @@ def do_instruction(instruction: str):
 program = """
 
 purple i1 i5 i0==i0 0 0
-purple i2 i0 i0==i0 0 0
-purple i0 i5 r3==r2 0 0
+purple i2 i5 i0==i0 0 0
+purple i0 i5 r3>=r2 0 0
 purple i4 r1 i0==i0 1 0
 purple i3 i1 i0==i0 1 0
-purple i0 i2 r3!=r2 0 0
+purple i0 i2 r3<r2 0 0
 
 """.splitlines()
 program = [i for i in program if i]
 
+debug = False
 while memory[0] < len(program):
+    if debug: 
+        print(f"Doing instruction: {program[memory[0]]}")
+        for idx, mem in enumerate(memory[:5]): print(f"Register {idx} : {mem}")
+    if debug: print("Executing instruction...")
     do_instruction(program[memory[0]])
+    if debug: print("Instruction executed.")
+    if debug:
+        for idx, mem in enumerate(memory[:5]):
+            print(f"Register {idx} : {mem}")
+        input("")
     memory[0] += 1
 print(memory)
 

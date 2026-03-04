@@ -103,11 +103,11 @@ fn kernel(system_table: &mut SystemTable<Boot>) -> Status {
     let mut program: LinkedList<&str> = LinkedList::new();
 
     program.push_front("purple i1 i5 i0==i0 0 0");
-    program.push_front("purple i2 i3 i0==i0 0 0");
-    program.push_front("purple i0 i4 r3!=r2 0 0");
+    program.push_front("purple i2 i5 i0==i0 0 0");
+    program.push_front("purple i0 i5 r3>=r2 0 0");
     program.push_front("purple i4 r1 i0==i0 1 0");
     program.push_front("purple i3 i1 i0==i0 1 0");
-    program.push_front("purple i0 i2 r3!=r2 0 0");
+    program.push_front("purple i0 i2 r3<r2 0 0");
     program.push_front("print-value r0");
     program.push_front("print-ascii i10");
     program.push_front("print-value r1");
