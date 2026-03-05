@@ -1,0 +1,20 @@
+{
+  "llvm-target": "x86_64-unknown-none",
+  "target-endian": "little",
+  "target-pointer-width": 64,
+  "target-c-int-width": 32,
+  "data-layout": "e-m:e-i64:64-f80:128-n8:16:32:64-S128",
+  "arch": "x86_64",
+  "os": "uefi",
+  "env": "",
+  "vendor": "unknown",
+  "linker-flavor": "ld.lld",
+  "linker": "rust-lld",
+  "pre-link-args": {
+    "ld.lld": ["-Wl,--subsystem,10"]
+  },
+  "executables": true,
+  "exe-suffix": ".efi",
+  "panic-strategy": "abort",
+  "is-like-windows": true
+}
