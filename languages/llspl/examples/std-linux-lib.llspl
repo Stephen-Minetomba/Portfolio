@@ -1,0 +1,18 @@
+void putchar(i8 character) {
+    asm {
+        mov rax, 1
+        mov rdi, 1
+        mov rsi, putchar_character
+        mov rdx, 1
+        syscall
+    }
+    return;
+}
+void exit(i8 code) {
+    asm {
+        mov rax, 60
+        mov rdi, exit_code
+        syscall
+    }
+    return;
+}

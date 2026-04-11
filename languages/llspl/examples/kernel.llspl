@@ -1,0 +1,183 @@
+// ------------------------------------------------
+// Interrupt handler (must stay assembly)
+// ------------------------------------------------
+asm {
+BITS 64
+
+section .text
+global isr_default
+
+isr_default:
+    cli
+    hlt
+    iretq
+}
+
+
+// ------------------------------------------------
+// IDT
+// ------------------------------------------------
+
+struct IDTEntry {
+    u16 offset_low;
+    u16 selector;
+    u8  ist;
+    u8  type_attr;
+    u16 offset_mid;
+    u32 offset_high;
+    u32 zero;
+};
+
+struct IDTPtr {
+    u16 limit;
+    u64 base;
+};
+
+struct IDTEntry idt_table[256];
+struct IDTPtr idt_ptr;
+
+void set_idt_entry(u64 i, u64 handler)
+{
+    idt_table[i].offset_low  = handler & 0xFFFF;
+    idt_table[i].selector    = 0x08;
+    idt_table[i].ist         = 0;
+    idt_table[i].type_attr   = 0x8E;
+    idt_table[i].offset_mid  = (handler >> 16) & 0xFFFF;
+    idt_table[i].offset_high = handler >> 32;
+    idt_table[i].zero        = 0;
+}
+
+void init_idt()
+{
+    u64 i = 0;
+
+    while(i < 256) {
+        set_idt_entry(i, isr_default);
+        i = i + 1;
+    }
+
+    idt_ptr.limit = sizeof(idt_table) - 1;
+    idt_ptr.base  = &idt_table;
+
+    asm {
+        lidt [idt_ptr]
+    }
+}
+
+
+// ------------------------------------------------
+// GDT
+// ------------------------------------------------
+
+struct GDTEntry {
+    u16 limit_low;
+    u16 base_low;
+    u8  base_mid;
+    u8  access;
+    u8  granularity;
+    u8  base_high;
+};
+
+struct GDTPtr {
+    u16 limit;
+    u64 base;
+};
+
+struct GDTEntry gdt[5];
+struct GDTPtr gdt_ptr;
+
+void init_gdt()
+{
+    // null descriptor
+    gdt[0].limit_low = 0;
+    gdt[0].base_low = 0;
+    gdt[0].base_mid = 0;
+    gdt[0].access = 0;
+    gdt[0].granularity = 0;
+    gdt[0].base_high = 0;
+
+    // kernel code
+    gdt[1].limit_low = 0xFFFF;
+    gdt[1].access = 0x9A;
+    gdt[1].granularity = 0xAF;
+
+    // kernel data
+    gdt[2].limit_low = 0xFFFF;
+    gdt[2].access = 0x92;
+    gdt[2].granularity = 0xAF;
+
+    // user code
+    gdt[3].limit_low = 0xFFFF;
+    gdt[3].access = 0x9B;
+    gdt[3].granularity = 0xAF;
+
+    // user data
+    gdt[4].limit_low = 0xFFFF;
+    gdt[4].access = 0x93;
+    gdt[4].granularity = 0xAF;
+
+    gdt_ptr.limit = sizeof(gdt) - 1;
+    gdt_ptr.base  = &gdt;
+
+    asm {
+        lgdt [gdt_ptr]
+    }
+}
+
+u64 PML4[512];
+u64 PDPT[512];
+u64 PD[512];
+
+u64 P_PRESENT = 1;
+u64 P_RW = 2;
+u64 P_USER = 4;
+u64 P_HUGE = 0x80;
+
+void init_paging()
+{
+    u64 i = 0;
+    PML4[0] = &PDPT | P_PRESENT | P_RW;
+    PDPT[0] = &PD   | P_PRESENT | P_RW;
+    while(i < 512) {
+        PD[i] = (i * 0x200000) | P_PRESENT | P_RW | P_HUGE;
+        i = i + 1;
+    }
+    // user memory
+    PD[2] = 0x400000 | P_PRESENT | P_RW | P_USER | P_HUGE;
+    PD[3] = 0x600000 | P_PRESENT | P_RW | P_USER | P_HUGE;
+
+    asm {
+
+        ; load PML4
+        lea rax, [PML4]
+        mov cr3, rax
+
+        ; enable PAE
+        mov rax, cr4
+        or  rax, 0x20
+        mov cr4, rax
+
+        ; enable long mode
+        mov ecx, 0xC0000080
+        xor edx, edx
+        rdmsr
+        or eax, 0x100
+        wrmsr
+
+        ; enable paging
+        mov rax, cr0
+        or  rax, 0x80000000
+        mov cr0, rax
+    }
+}
+efi_setup {
+    asm {cli}
+    init_gdt();
+    init_idt();
+    init_paging();
+
+    asm {
+        sti
+        jmp $
+    }
+}

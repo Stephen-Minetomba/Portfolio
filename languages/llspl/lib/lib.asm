@@ -1,10 +1,3 @@
-; ---------- EXIT ----------
-%macro exit 1
-    mov rax, 60
-    mov rdi, %1
-    syscall
-%endmacro
-
 ; ---------- SET (immediate) ----------
 %macro seti8 2
     mov byte [%1], %2
@@ -43,7 +36,7 @@
     mov qword [%1], rax
 %endmacro
 
-; ---------- VARIABLE DECLARATIONS ----------
+; ---------- INT DECLARATIONS (global btw) ----------
 %macro int8 1
     section .data
     %1 db 0
@@ -68,7 +61,7 @@
     section .text
 %endmacro
 
-; ---------- ARRAYS ----------
+; ---------- ARRAY DECLARATIONS (global btw) ----------
 %macro intArray8 2
     section .data
     %1 times %2 db 0
@@ -115,6 +108,8 @@
     %elifidn %4, 64
         mov rbx, [rax]
         mov [%1], rbx
+    %else
+        %error "Invalid bit width for getIndexR (must be 8,16,32,64)"
     %endif
 %endmacro
 
@@ -138,6 +133,8 @@
     %elifidn %4, 64
         mov rbx, [rax]
         mov [%1], rbx
+    %else
+        %error "Invalid bit width for getIndexI (must be 8,16,32,64)"
     %endif
 %endmacro
 
@@ -163,6 +160,8 @@
     %elifidn %4, 64
         mov rdx, [%3]
         mov qword [rax], rdx
+    %else
+        %error "Invalid bit width for setAtIndexR (must be 8,16,32,64)"
     %endif
 %endmacro
 
@@ -186,76 +185,146 @@
     %elifidn %4, 64
         mov rdx, %3
         mov qword [rax], rdx
+    %else
+        %error "Invalid bit width for setAtIndexI (must be 8,16,32,64)"
     %endif
-%endmacro
-
-; ---------- SYSCALL WRAPPER ----------
-%macro scall 4 ; syscall_number, fd, buffer, length
-    mov rax, %1 ; first argument (syscall number)
-    mov rdi, %2 ; second argument (fd)
-    mov rsi, %3 ; third argument (buffer pointer)
-    mov rdx, %4 ; fourth argument (length/count)
-    syscall
-%endmacro
-
-; ---------- PRINT (surprisingly, this one is more useful than printstr because you have fewer rules and you also don't need to null-terminate) ----------
-%macro print 2 ; address, length
-    mov rax, 1
-    mov rdi, 1
-    mov rsi, %1
-    mov rdx, %2
-    syscall
-%endmacro
-
-; ---------- PRINT (auto length, very useful) ----------
-%macro printstr 1 ; string label or intArray (must be null-terminated, but who am I to tell you what to do in the lowest-level human-readable programming language? do whatever you want :D)
-    push rax
-    push rdi
-    push rsi
-    push rdx
-    push rcx
-    
-    mov rsi, %1
-    xor rcx, rcx
-%%count:
-    cmp byte [rsi + rcx], 0
-    je %%print
-    inc rcx
-    jmp %%count
-%%print:
-    mov rax, 1
-    mov rdi, 1
-    mov rdx, rcx
-    syscall
-    
-    pop rcx
-    pop rdx
-    pop rsi
-    pop rdi
-    pop rax
-%endmacro
-
-; ---------- HELPER ----------
-%macro newline 0
-    push rax
-    push rdi
-    push rsi
-    push rdx
-    mov rax, 1
-    mov rdi, 1
-    mov rsi, newline_char
-    mov rdx, 1
-    syscall
-    pop rdx
-    pop rsi
-    pop rdi
-    pop rax
 %endmacro
 
 section .data
     newline_char db 10
 
+; ---------- FUNCTION DEFINITIONS ----------
 %macro func 1
+section .text
 global %1
 %1:
+%endmacro
+
+; ---------- I/O PORT ACCESS ----------
+%macro outx 3
+    %ifidn %3, 8
+        mov al, %2
+        out %1, al
+    %elifidn %3, 16
+        mov ax, %2
+        out %1, ax
+    %elifidn %3, 32
+        mov eax, %2
+        out %1, eax
+    %else
+        %error "Invalid bit width for outx (must be 8,16,32)"
+    %endif
+%endmacro
+
+%macro inx 3
+    %ifidn %3, 8
+        in al, %2
+        mov [%1], al
+    %elifidn %3, 16
+        in ax, %2
+        mov [%1], ax
+    %elifidn %3, 32
+        in eax, %2
+        mov [%1], eax
+    %else
+        %error "Invalid bit width for inx (must be 8,16,32)"
+    %endif
+%endmacro
+
+; ---------- BIT MANIPULATION ----------
+
+; Set a bit
+%macro setBit 2 ; reg, bit
+    bts %1, %2
+%endmacro
+
+; Clear a bit
+%macro clearBit 2 ; reg, bit
+    btr %1, %2
+%endmacro
+
+; Test a bit
+%macro testBit 2 ; reg, bit
+    bt %1, %2
+%endmacro
+
+; ---------- STACK UTILITIES ----------
+%macro pushRegs 0
+    push rax
+    push rbx
+    push rcx
+    push rdx
+    push rsi
+    push rdi
+    push rbp
+    push r8
+    push r9
+    push r10
+    push r11
+    push r12
+    push r13
+    push r14
+    push r15
+%endmacro
+
+%macro popRegs 0
+    pop r15
+    pop r14
+    pop r13
+    pop r12
+    pop r11
+    pop r10
+    pop r9
+    pop r8
+    pop rbp
+    pop rdi
+    pop rsi
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+%endmacro
+
+; ---------- KERNEL DEVELOPMENT HELPER FUNCTIONS ----------
+%macro EXIT_BOOT_SERVICES 0
+    push rbx
+    push rbp
+    mov rbp, rsp
+    sub rsp, 128
+    mov [rbp - 40], rdi
+    mov [rbp - 48], rsi
+.exit_bservices_retry:
+    mov rsi, [rbp - 48]
+    mov rbx, [rsi + 96]
+    mov qword [rbp - 8], 0
+    lea rcx, [rbp - 8]
+    xor rdx, rdx
+    lea r8, [rbp - 16]
+    lea r9, [rbp - 24]
+    lea rax, [rbp - 32]
+    mov [rsp + 32], rax
+    mov rax, [rbx + 56]
+    call rax
+    mov rcx, [rbp - 40]
+    mov rdx, [rbp - 16]
+    mov rax, [rbx + 232]
+    call rax
+    test rax, rax
+    jnz .exit_bservices_retry
+    mov rsp, rbp
+    pop rbp
+    pop rbx
+%endmacro
+
+%macro efi_setup 0
+section .bss align=16
+    kernel_stack: resb 4096
+section .text align=16
+    global efi_main
+efi_main:
+    sub rsp, 40
+    mov rdi, rcx
+    mov rsi, rdx
+    EXIT_BOOT_SERVICES
+    mov rsp, kernel_stack + 4096
 %endmacro
