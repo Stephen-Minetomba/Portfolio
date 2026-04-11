@@ -81,4 +81,4 @@ def identify_fuzzy(cap_color: str, spore_print: str = None, bruising: str = None
 
 identify_fuzzy("white", "brown-purple", "none", "none", "none", "brown-black", "field")
 
-# trees > logs > firewood > money
+# business plan: trees > logs > firewood > money
